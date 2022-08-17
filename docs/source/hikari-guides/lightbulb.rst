@@ -3,6 +3,12 @@ Hikari + Lightbulb
 ==================
 Get Started Guide, by Nova
 
+Introduction
+============
+
+| I hightly recommand an **intermediate level** of Python knowledge before you begin this guide.
+| If you don't know Python well, Carberra Tutorials is a good place to get started: https://www.youtube.com/playlist?list=PLYeOw6sTSy6bHRFwzIA3VAy05J2tJAAoS
+
 Throughout this guide you will see links like "`Read the docs <#>`_" which go to the
 `Hikari docs <https://www.hikari-py.dev/hikari/>`_, `Lightbulb docs <https://hikari-lightbulb.readthedocs.io/en/latest/>`_
 or other documentation.
@@ -11,7 +17,16 @@ I try to put them in useful places where people might need them to modify their 
 | The GitHub Repository for this guide is located `here <https://github.com/novanai/hikari-lightbulb-guide>`_
 | This should really only be used as an assist to the guide, and *not to just copy and paste*. :<
 
-This guide was last updated on ``16 August 2022``.
+This guide was last updated on ``17 August 2022``.
+
+What does this guide cover?
+---------------------------
+
+- Commands & command options (text-based prefix & slash)
+- Lightbulb extensions & plugins
+- Message components (specifically select menus)
+- Command checks & cooldowns 
+- Basic error handling
 
 .. _Part 1:
 
@@ -87,7 +102,6 @@ In ``requirements.txt`` paste the following
     hikari-lightbulb>=2.2.4
     hikari-miru>=1.1.2
     python-dotenv>=0.20.0
-    uvloop>=0.16; sys_platform != "win32"
 
 And then run
 
@@ -95,17 +109,12 @@ And then run
 
     python -m pip install -r requirements.txt
 
-.. note::
-    
-    uvloop is not supported on Windows, **but is optional** so you can still do this guide on a Windows machine.
-
 What have we just installed?
 ----------------------------
 
 - `Hikari <https://www.hikari-py.dev/hikari/>`_ - a "sane Python framework for writing modern Discord bots"
 - `Lightbulb <https://hikari-lightbulb.readthedocs.io/en/latest>`_ - a "simple and easy to use command framework for Hikari"
 - `Miru <https://hikari-miru.readthedocs.io/en/latest/index.html>`_ - an "optional component handler for Hikari"
-- `uvloop <https://github.com/MagicStack/uvloop>`_ - optional dependency for additional performance benefits on UNIX-like systems
 
 So now, let's begin!
 
@@ -151,12 +160,7 @@ Next, in ``bot.py`` paste the following:
 
 
     if __name__ == "__main__":
-        if os.name != "nt":
-            # we're not running on a Windows machine, so we can use uvloop
-            import uvloop
-
-            uvloop.install()
-        else:
+        if os.name == "nt":
             # we are running on a Windows machine, and we have to add this so
             # the code doesn't error :< (it most likely will error without this)
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -199,13 +203,13 @@ Now let's go through what everything does
 
 - **Line 1-5** - Import the ``asyncio``, ``os``, ``dotenv`` and ``hikari`` modules
 - **Line 7** - Load the ``.env`` file
-- **Line 9-12** - Create a bot using that token, and all Discord `intents <https://discord.com/developers/docs/topics/gateway#gateway-intents>`_
+- | **Line 9-12** - Create a bot using that token, and all Discord `intents <https://discord.com/developers/docs/topics/gateway#gateway-intents>`_
+  | `Read the docs - Intents <https://hikari-lightbulb.readthedocs.io/en/latest/hikari_basics/intents.html>`_
 - **Line 15-23** - The bot listens for messages sent in guilds (servers)
     - If the message author is not a human or the message has no text content (though it may have attachments), it ignores it
     - Otherwise, it checks if the message content is ``+ping`` and if it is, the bot responds with ``Pong!`` and it's heartbeat latency
-- **Line 26-37**
-    - If we're on a non-Windows machine, import uvloop and install it
-    - If we *are* on a Windows machine, we have to add line 35 to stop a possible error from occuring
+- **Line 26-32**
+    - If we are on a Windows machine, we have to add line 30 to stop a possible asyncio error from occuring
     - And finally, run the bot!
 
 This bot works, but to add more commands other than ``+ping`` would be a *huge* hassle, so this is where Lightbulb comes in...
@@ -219,7 +223,7 @@ So to start using Lightbulb, let's change our ``bot.py`` a little (new code has 
 
 .. code-block:: python
     :linenos:
-    :emphasize-lines: 6, 10-16, 19-23
+    :emphasize-lines: 6, 10-15, 18-22
 
     import asyncio
     import os
@@ -233,7 +237,6 @@ So to start using Lightbulb, let's change our ``bot.py`` a little (new code has 
     bot = lightbulb.BotApp(
         os.environ["BOT_TOKEN"],
         intents=hikari.Intents.ALL,
-        default_enabled_guilds=[123456],  # change to your own guild ID
         prefix="+",
         banner=None,
     )
@@ -247,31 +250,18 @@ So to start using Lightbulb, let's change our ``bot.py`` a little (new code has 
 
 
     if __name__ == "__main__":
-        if os.name != "nt":
-            import uvloop
-            uvloop.install()
-        else:
+        if os.name == "nt":
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
         bot.run()
 
 
 - **Line 6** - We've imported lightbulb now too
-- **Line 10-16** - We've used lightbulb to create the bot, adding
-    - a ``default_enabled_guilds`` kwarg, in which you should change "``123456``" to the ID of the guild that your bot is in
+- **Line 10-15** - We've used lightbulb to create the bot, adding
     - a ``prefix`` kwarg set to ``"+"``, for text-based commands
     - | a ``banner`` kwarg set to ``None``, disabling the hikari banner that appears when the bot starts
       | This isn't necessary, but the banner can get a little annoying after a while (sorry dav >_>)
-- **Line 19-23** - Creates a command with the lightbulb bot named ``ping`` which works the same as the old ``ping`` command, responding with ``Pong!`` and the bot's heartbeat latency
-
-.. note::
-
-    **Why do we set a default guild?**
-    
-    By default, slash commands are global but can take up to an hour to appear after registering with Discord.
-
-    Setting default guild(s) means that slash commands will only appear in those guild(s), but will appear and
-    update instantly when running the bot.
+- **Line 18-22** - Creates a command with the lightbulb bot named ``ping`` which works the same as the old ``ping`` command, responding with ``Pong!`` and the bot's heartbeat latency
 
 Now let's run the bot again!
 
@@ -308,18 +298,10 @@ will turn the command into a slash command, as well as a text-based prefix comma
 Command Options
 ---------------
 
-Commands, both prefix and slash, can have options. Discord supports quite a few
-`options types <https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type>`_
-for slash commands, including:
-
-- String
-- Integer
-- Number
-- Boolean
-- User
-- Channel
-- Role
-- Attachment
+| Commands, both prefix and slash, can have options. Discord supports quite a few
+ `options types <https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type>`_
+ for slash commands.
+| `Read the docs - Command Option Types <https://hikari-lightbulb.readthedocs.io/en/latest/guides/commands.html#converters-and-slash-command-option-types>`_
 
 Let's make a new command using some of these option types to demonstrate them!
 
@@ -362,8 +344,8 @@ After your ``ping`` command, add this:
         )
 
 - **Line 2-8** - Specifying the options for our command
-    - You can see that we've specified a type for each option, such as ``hikari.Role``, ``.TextableChannel`` and ``.Attachment``
-    - Using default Python types such as ``str`` and ``int`` is also valid (**Line 7**)
+    - You can see that we've specified a type for each option, such as ``hikari.Role``, ``hikari.TextableChannel`` and ``hikari.Attachment``
+    - Using built-in Python types such as ``str`` and ``int`` is also valid (**Line 7**)    
 - **Line 12-15** - We've passed our options as parameters to the command's function
     - **NOTE:** The parameters must be named exactly as the options
     - | You **cannot**, for example, call your ``message`` parameter ``msg``
@@ -378,6 +360,8 @@ After your ``ping`` command, add this:
 .. image:: ../_static/announcement_2.png
 .. image:: ../_static/announcement_3.png
 .. image:: ../_static/announcement_4.png
+
+`Read the docs - Commands <https://hikari-lightbulb.readthedocs.io/en/latest/guides/commands.html>`_
 
 .. _Part 3:
 
@@ -536,6 +520,8 @@ Now to go through what everything does...
 - | **Line 73-74** - the load function, to load the extension when the bot starts
   | **Note:** This is required in each extension
 
+`Read the docs - Extensions <https://hikari-lightbulb.readthedocs.io/en/latest/guides/extensions.html>`_
+
 Part 4 - BotApp.d - a built-in DataStore
 ========================================
 
@@ -652,7 +638,7 @@ and if we can't fetch a meme:
 
 .. note::
 
-    Ephemeral response only work with slash commands, not prefix commands
+    Ephemeral response only work with application commands, not prefix commands
 
 Part 6 - Message Components
 ====================================
@@ -776,6 +762,8 @@ And if the menu times out:
 
 .. image:: ../_static/animal_4.png
 
+`Read the docs - Components <https://hikari-lightbulb.readthedocs.io/en/latest/hikari_basics/components.html>`_
+
 Part 7 - Miru, an optional component handler
 ============================================
 
@@ -884,8 +872,10 @@ and understand at a glance, and adding buttons or other select menus would be in
 - **Line 58** - Start the view
 - **Line 59** - Wait for the view to finish
 
-If you want to learn how to use buttons and more with Miru, check out the Miru guides, written by the creator:
-https://hikari-miru.readthedocs.io/en/latest/getting-started.html
+.. note::
+
+    If you want to learn how to use buttons and more with Miru, check out the Miru guides, written by Miru's creator:
+    https://hikari-miru.readthedocs.io/en/latest/getting-started.html
 
 Part 8 - Command Checks
 =======================
