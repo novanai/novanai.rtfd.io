@@ -34,7 +34,7 @@ mod_plugin = lightbulb.Plugin("Mod")
     min_value=2,
     max_value=200,
 )
-@lightbulb.command("purge", "Purge messages.")
+@lightbulb.command("purge", "Purge messages.", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def purge_messages(ctx: lightbulb.SlashContext) -> None:
     num_msgs = ctx.options.messages
@@ -44,13 +44,16 @@ async def purge_messages(ctx: lightbulb.SlashContext) -> None:
     bulk_delete_limit = datetime.datetime.now(
         datetime.timezone.utc
     ) - datetime.timedelta(days=14)
+
     iterator = (
         ctx.bot.rest.fetch_messages(channel)
         .take_while(lambda msg: msg.created_at > bulk_delete_limit)
-        .limit(num_msgs)
+        .filter(lambda msg: not (msg.flags & hikari.MessageFlag.LOADING))
     )
     if sent_by:
         iterator = iterator.filter(lambda msg: msg.author.id == sent_by.id)
+
+    iterator = iterator.limit(num_msgs)
 
     count = 0
 
@@ -68,14 +71,22 @@ def load(bot: lightbulb.BotApp) -> None:
 - **Line 10-23** - Set up the command options
     - For the `messages` option, we've set limits.  
     When bulk deleting messages, Discord says you must have a minimum value of `2` messages. And because we don't want our bot to get rate limited while deleting huge amounts of messages, we also set our own maximum value of `200`.
+- **Line 24** - Pass a new kwarg `auto_defer`, setting it to `True`
+    - This will respond to the command with a `DEFERRED` response type, showing the user a `"<bot name> is thinking..."` message until we respond properly after deleting the messages
 - **Line 27-28** - If we don't use `pass_options=True` in the command decorator (like with the `userinfo` command), we can't pass the options as function parameters, but their values can still be accessed via `ctx.options`
 - **Line 31-33** - Bots can't bulk delete messages older than 2 weeks, so we set a limit to only fetch messages younger than 2 weeks
-- **Line 34-38** - Create an iterator which fetches the most recent messages in the channel, taking only the ones younger than 2 weeks and limiting it to `num_msgs`  
+- **Line 35-43**
+    - **Line 36** - Create an iterator which fetches the most recent messages in the channel  
     [Read the docs - fetch_messages](https://www.hikari-py.dev/hikari/api/rest.html#hikari.api.rest.RESTClient.fetch_messages)  
-    Add `.take_while()` docs
-    [Read the docs - LazyIterator.limit()](https://www.hikari-py.dev/hikari/iterators.html#hikari.iterators.LazyIterator.limit)
-- **Line 39-40** - If a sent_by user was provided, then filter the iterator to only hold messages sent by that user
-- **Line 44-46** - Delete the messages in the iterator, in chunks of 100
+    [Read the docs - `LazyIterator`](https://docs.hikari-py.dev/en/latest/reference/hikari/iterators/#hikari.iterators.LazyIterator)
+    - **Line 37** - Take only the messages younger than 2 weeks  
+    [Read the docs - `.take_while()`](https://docs.hikari-py.dev/en/latest/reference/hikari/iterators/#hikari.iterators.LazyIterator.take_while)
+    - **Line 38** - Filter the iterator, ignoring messages that have the `LOADING` message flag. These are the messages that display `"<bot name> is thinking..."`  
+    [Read the docs - `.filter()`](https://docs.hikari-py.dev/en/latest/reference/hikari/iterators/#hikari.iterators.LazyIterator.filter)
+    - **Line 40-41** - If a `sent_by` user was provided, then filter the iterator to only fetch messages sent by that user
+    - **Line 43** - Finally, after all our filters have been applied, limit the number of messages to fetch  
+   
+- **Line 47-49** - Delete the messages in the iterator, in chunks of 100
     - A maximum of 100 messages can be passed per bulk delete request, so we chunk them into groups of 100 and make multiple requests
 
 This command works fine, but now *everyone* can delete messages using the bot. We only want people with the `Manage Messages` permission to do this, so this is where [checks](https://hikari-lightbulb.readthedocs.io/en/latest/guides/commands.html#adding-checks-to-commands) come in.

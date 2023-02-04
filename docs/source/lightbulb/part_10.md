@@ -31,3 +31,5 @@ elif isinstance(exception, lightbulb.CommandIsOnCooldown):
     )
     return True
 ```
+
+[Read the docs - CommandIsOnCooldown](https://hikari-lightbulb.readthedocs.io/en/latest/api_references/errors.html#lightbulb.errors.CommandIsOnCooldown)

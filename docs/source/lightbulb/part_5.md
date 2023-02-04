@@ -24,9 +24,7 @@ async def fun_group(_) -> None:
 @lightbulb.command("meme", "Get a meme!")
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def meme_subcommand(ctx: lightbulb.SlashContext) -> None:
-    async with ctx.bot.d.client_session.get(
-        "https://meme-api.herokuapp.com/gimme"
-    ) as res:
+    async with ctx.bot.d.client_session.get("https://meme-api.com/gimme") as res:
         if not res.ok:
             await ctx.respond(
                 f"API returned a {res.status} status :c",
@@ -63,22 +61,22 @@ def load(bot: lightbulb.BotApp) -> None:
 - **Line 15** - Decorator to create the subcommand, setting the name to `meme` and adding a description
 - **Line 16** - Convert the decorated function into a `SlashSubCommand`
 - **Line 17** - The subcommand's function
-- **Line 18-21** - Using the `client_session` from the `bot.d` data store that we created in the previous section, get a meme from the [Meme API](https://github.com/D3vd/Meme_Api)   
+- **Line 18** - Using the `client_session` from the `bot.d` data store that we created in the previous section, get a meme from the [Meme API](https://github.com/D3vd/Meme_Api)   
     [Read the docs - aiohttp.ClientSession](https://docs.aiohttp.org/en/stable/#client-example)
-- **Line 21-26** - If the response returned status code that wasn't "ok",
+- **Line 19-24** - If the response returned status code that wasn't "ok",
     - Respond with a helpful ephemeral message to the command author
     - `return` so that no further code in the function is run
-- **Line 28** - The response is ok, get the json from it
-- **Line 30-25** - If the response is NSFW (Not Safe For Work), we don't want to send it.
+- **Line 26** - The response is ok, get the json from it
+- **Line 28-33** - If the response is NSFW (Not Safe For Work), we don't want to send it.
     - Again, we send an ephemeral message to the command author and `return` so no further code is run
-- **Line 37-42** - If the response is ok and the meme is not NSFW, then
-    - **Line 37** - Create an embed
-    - **Line 38** - Set the embed's author to the meme's title and link
-    - **Line 39** - Set the embed's image to the meme's image url
-    - **Line 41** - Respond to the interaction with the embed
+- **Line 35-39** - If the response is ok and the meme is not NSFW, then
+    - **Line 35** - Create an embed
+    - **Line 36** - Set the embed's author to the meme's title and link
+    - **Line 37** - Set the embed's image to the meme's image url
+    - **Line 39** - Respond to the interaction with the embed
 
 ```{note}
-Using the [Meme API Documentation](https://github.com/D3vd/Meme_Api), you could change the command to make it your own.
+Using the [Meme API Documentation](https://github.com/D3vd/Meme_Api), you could customise this command.
 
 For example:
 - Add an option to choose which subreddit to get the meme from

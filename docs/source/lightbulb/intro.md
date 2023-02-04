@@ -6,7 +6,7 @@ Throughout this guide you will see links like "[Read the docs](#introduction)" w
 
 The GitHub Repository for this guide is located [here](https://github.com/novanai/hikari-lightbulb-guide). This should really only be used as an assist to the guide, and *not to just copy and paste from*. :<
 
-This guide was last updated on ``24 December 2022``.
+This guide was last updated on ``4 February 2023``.
 
 ## What does this guide cover?
 
@@ -78,10 +78,10 @@ You'll need to activate this venv when running your bot.
 In `requirements.txt` paste the following:
 
 ```
-hikari[speedups]==2.0.0.dev113
+hikari[speedups]==2.0.0.dev115
 hikari-lightbulb==2.3.1
-hikari-miru==2.0.1
-python-dotenv==0.21.0
+hikari-miru==2.0.4
+python-dotenv==0.21.1
 ```
 And then run
 

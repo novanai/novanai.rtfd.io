@@ -140,7 +140,7 @@ async def announce(
     We'll look at embeds in more detail in the [next part](part_3.md)
 - **Line 27-32** - Send the message to the given channel, pinging the role (if provided in the command options)
     ```{note}
-    To ping everyone with the role, you must have set `role_mentions` to `True`, and the bot must have the `Mention All Roles` permission in the guild
+    To ping everyone with the role, you must have set `role_mentions` to `True`, and the bot must have the permissions to mention the role in the guild
     ```
 - **Line 34-36** - Respond to the interaction with an `ephemeral` message, stating where the announcement has been posted
 
