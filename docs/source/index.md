@@ -1,6 +1,6 @@
 # NovaNAI
 
-Welcome to NovaNAI, Nova's Neurologically Attached Intelligence
+Welcome to NovaNAI, Nova's Neurologically Attached Intelligence.
 
 Here you'll find a small (but growing) collection of **python-based guides** to help with specific topics, such as **Discord Bot building**.
 
