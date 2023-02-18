@@ -32,7 +32,7 @@ ANIMALS = {
 async def animal_subcommand(ctx: lightbulb.SlashContext) -> None:
     select_menu = (
         ctx.bot.rest.build_message_action_row()
-        .add_select_menu("animal_select")
+        .add_select_menu(hikari.ComponentType.TEXT_SELECT_MENU, "animal_select")
         .set_placeholder("Pick an animal")
     )
 
@@ -55,7 +55,7 @@ async def animal_subcommand(ctx: lightbulb.SlashContext) -> None:
             predicate=lambda e: isinstance(e.interaction, hikari.ComponentInteraction)
             and e.interaction.user.id == ctx.author.id
             and e.interaction.message.id == msg.id
-            and e.interaction.component_type == hikari.ComponentType.SELECT_MENU,
+            and e.interaction.component_type == hikari.ComponentType.TEXT_SELECT_MENU,
         )
     except asyncio.TimeoutError:
         await msg.edit("The menu timed out :c", components=[])

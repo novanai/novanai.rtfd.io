@@ -78,9 +78,9 @@ You'll need to activate this venv when running your bot.
 In `requirements.txt` paste the following:
 
 ```
-hikari[speedups]==2.0.0.dev115
+hikari[speedups]==2.0.0.dev116
 hikari-lightbulb==2.3.1
-hikari-miru==2.0.4
+hikari-miru==3.0.2
 python-dotenv==0.21.1
 ```
 And then run

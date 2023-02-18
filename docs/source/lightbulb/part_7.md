@@ -34,7 +34,7 @@ class AnimalView(miru.View):
         self.author = author
         super().__init__(timeout=60)
 
-    @miru.select(
+    @miru.text_select(
         custom_id="animal_select",
         placeholder="Pick an animal",
         options=[
@@ -42,7 +42,7 @@ class AnimalView(miru.View):
             for name, emoji in ANIMALS.items()
         ],
     )
-    async def select_menu(self, select: miru.Select, ctx: miru.Context) -> None:
+    async def select_menu(self, select: miru.TextSelect, ctx: miru.ViewContext) -> None:
         animal = select.values[0]
         async with ctx.app.d.client_session.get(  # type: ignore[attr-defined]
             f"https://some-random-api.ml/animal/{animal}"
@@ -66,7 +66,7 @@ class AnimalView(miru.View):
     async def on_timeout(self) -> None:
         await self.message.edit("The menu timed out :c", components=[])  # type: ignore[union-attr]
 
-    async def view_check(self, ctx: miru.Context) -> bool:
+    async def view_check(self, ctx: miru.ViewContext) -> bool:
         return ctx.user.id == self.author.id
 
 
