@@ -16,7 +16,7 @@ fun_plugin = lightbulb.Plugin("Fun")
 @fun_plugin.command
 @lightbulb.command("fun", "All the entertainment commands you'll ever need!")
 @lightbulb.implements(lightbulb.SlashCommandGroup)
-async def fun_group(_) -> None:
+async def fun_group(_: lightbulb.SlashContext) -> None:
     pass  # as slash commands cannot have their top-level command run, we simply pass here
 
 

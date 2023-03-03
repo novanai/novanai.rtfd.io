@@ -14,15 +14,15 @@ Then, insert the following after the `meme` command, but above the `load` functi
 :linenos:
 
 ANIMALS = {
-    "Dog": "🐶",
-    "Cat": "🐱",
-    "Panda": "🐼",
-    "Fox": "🦊",
-    "Red Panda": "🐼",
-    "Koala": "🐨",
     "Bird": "🐦",
-    "Racoon": "🦝",
+    "Cat": "🐱",
+    "Dog": "🐶",
+    "Fox": "🦊",
     "Kangaroo": "🦘",
+    "Koala": "🐨",
+    "Panda": "🐼",
+    "Raccoon": "🦝",
+    "Red Panda": "🐼", 
 }
 
 
