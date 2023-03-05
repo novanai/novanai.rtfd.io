@@ -44,7 +44,7 @@ class AnimalView(miru.View):
     )
     async def select_menu(self, select: miru.TextSelect, ctx: miru.ViewContext) -> None:
         animal = select.values[0]
-        async with ctx.app.d.client_session.get(  # type: ignore[attr-defined]
+        async with ctx.app.d.client_session.get(
             f"https://some-random-api.ml/animal/{animal}"
         ) as res:
             if not res.ok:
@@ -64,7 +64,7 @@ class AnimalView(miru.View):
             )
 
     async def on_timeout(self) -> None:
-        await self.message.edit("The menu timed out :c", components=[])  # type: ignore[union-attr]
+        await self.message.edit("The menu timed out :c", components=[])
 
     async def view_check(self, ctx: miru.ViewContext) -> bool:
         return ctx.user.id == self.author.id
