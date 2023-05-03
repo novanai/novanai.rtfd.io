@@ -45,7 +45,7 @@ class AnimalView(miru.View):
     async def select_menu(self, select: miru.TextSelect, ctx: miru.ViewContext) -> None:
         animal = select.values[0]
         async with ctx.app.d.client_session.get(
-            f"https://some-random-api.ml/animal/{animal}"
+            f"https://some-random-api.com/animal/{animal}"
         ) as res:
             if not res.ok:
                 await ctx.edit_response(

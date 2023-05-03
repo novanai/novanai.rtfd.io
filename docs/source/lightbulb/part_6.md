@@ -62,7 +62,7 @@ async def animal_subcommand(ctx: lightbulb.SlashContext) -> None:
     else:
         animal = event.interaction.values[0]
         async with ctx.bot.d.client_session.get(
-            f"https://some-random-api.ml/animal/{animal}"
+            f"https://some-random-api.com/animal/{animal}"
         ) as res:
             if not res.ok:
                 await msg.edit(f"API returned a {res.status} status :c", components=[])
@@ -77,7 +77,7 @@ async def animal_subcommand(ctx: lightbulb.SlashContext) -> None:
             await msg.edit(f"Here's a {animal} for you! :3", embed=embed, components=[])
 ```
 
-- **Line 1-11** - Create a [dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) containing all the possible endpoints of [some-random-api.ml/animal/](https://some-random-api.ml/endpoints)
+- **Line 1-11** - Create a [dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) containing all the possible endpoints of [some-random-api.com/animal/](https://some-random-api.com/endpoints)
 - **Line 14-16** - Set up the slash subcommand
 - **Line 18-22** - Create a [message action row](https://www.hikari-py.dev/hikari/api/rest.html#hikari.api.rest.RESTClient.build_action_row)
     - Add a select menu to the action row, with "`animal_select`" as the custom ID
@@ -97,7 +97,7 @@ async def animal_subcommand(ctx: lightbulb.SlashContext) -> None:
     - the interaction component type is a select menu
 - **Line 45-46** - If the interaction times out, an `asyncio.TimeoutError` will be raised, and so we can use that to handle the timeout by editing our response and removing the components
 - **Line 48** - Get the value of the interaction (the selected option) - [Read the docs - ComponentInteraction.values](https://www.hikari-py.dev/hikari/interactions/component_interactions.html#hikari.interactions.component_interactions.ComponentInteraction.values)
-- **Line 49-51** - Make a `GET` request to [some-random-api.ml/animal/](https://some-random-api.ml/endpoints) with the selected animal as the option
+- **Line 49-51** - Make a `GET` request to [some-random-api.com/animal/](https://some-random-api.com/endpoints) with the selected animal as the option
 - **Line 52-54** - If the response doesn't have an `ok` status,
     - edit our response and remove the message components
     - `return` so no further code will be run
@@ -116,7 +116,7 @@ And if the menu times out:
 ![animal](../_static/lightbulb/animal_3.png)
 
 ```{note}
-[some-random-api.ml](https://some-random-api.ml/endpoints) has a lot of different endpoints, all fun and useful for a Discord bot. If you want to make more API-centred commands, it's a great API to use!
+[some-random-api.com](https://some-random-api.com/endpoints) has a lot of different endpoints, all fun and useful for a Discord bot. If you want to make more API-centred commands, it's a great API to use!
 ```
 
 [Read the docs - Components](https://hikari-lightbulb.readthedocs.io/en/latest/hikari_basics/components.html)
