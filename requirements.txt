@@ -1,4 +1,4 @@
-furo~=2022.12.7
-myst-parser~=0.18.1
-sphinx~=5.3.0
-sphinxext-opengraph~=0.7.5
+furo~=2023.3.27
+myst-parser~=1.0.0
+sphinx~=6.2.1
+sphinxext-opengraph~=0.8.2
